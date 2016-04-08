@@ -1,8 +1,5 @@
-import sys
-
-from oauth2client import client
-from googleapiclient import sample_tools
 import datetime
+
 
 def create_draft_post(blog_id, posts, content):
     new_post = posts.insert(blogId=blog_id, body=content)
@@ -11,12 +8,12 @@ def create_draft_post(blog_id, posts, content):
 def update_blog_post(blog_id, post_id, content, posts):
     return
 
-def content_setup(blog_id, body):
+def content_setup(blog_id, title, body):
     today = datetime.date.today()
 
     content = {"kind": "blogger#post",
                "id": blog_id,
-               "title": "Max Blogs, {0}".format(today),
+               "title": "{0}, {1}".format(title, today),
                "content": body}
 
     return content
@@ -45,26 +42,3 @@ def test_post(users, blogs, posts):
                 for post in posts_doc['items']:
                     print('  %s (%s)' % (post['title'], post['url']))
             request = posts.list_next(request, posts_doc)
-
-def main(argv):
-    service, flags = sample_tools.init(argv, 'blogger', 'v3', __doc__, __file__, scope='https://www.googleapis.com/auth/blogger')
-
-    try:
-
-        users = service.users()
-        blogs = service.blogs()
-        posts = service.posts()
-
-        # Retrieve the list of Blogs this user has write privileges on
-        this_users_blogs = blogs.listByUser(userId='self').execute()
-        for blog in this_users_blogs['items']:
-            # Publish a draft page
-            new_post = create_draft_post(blog['id'], posts)
-            print(new_post)
-
-    except client.AccessTokenRefreshError:
-        print('The credentials have been revoked or expired, please re-run'
-              'the application to re-authorize')
-
-if __name__ == '__main__':
-    main(sys.argv)
