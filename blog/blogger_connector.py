@@ -3,6 +3,7 @@ import sys
 from oauth2client import client
 from googleapiclient import sample_tools
 
+
 def create_draft_post(blog_id, posts):
     content = {"kind": "blogger#post",
                "id": blog_id,
@@ -11,8 +12,10 @@ def create_draft_post(blog_id, posts):
     new_post = posts.insert(blogId=blog_id, body=content)
     return new_post.execute()
 
+
 def update_blog_post(blog_id, post_id, content, posts):
     return
+
 
 def main(argv):
     service, flags = sample_tools.init(argv, 'blogger', 'v3', __doc__, __file__, scope='https://www.googleapis.com/auth/blogger')

@@ -2,7 +2,7 @@
 
 import os
 import time
-import upload
+import blogger_connector
 
 
 def main():
@@ -24,8 +24,8 @@ def get_files(path):
 def parse_files(files):
     for f in files:
         with open(f, 'r') as myfile:
-            data = "<div>"
-            data += myfile.read() + "</div>"
-            upload.upload_post(data)
+            body = "<div>"
+            body += myfile.read() + "</div>"
+            blogger_connector.content_setup()
 
 main()
