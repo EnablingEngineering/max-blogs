@@ -2,10 +2,11 @@
 
 import sys
 import os
-import time
+import logging
 import blogger_connector
 from oauth2client import client
 from googleapiclient import sample_tools
+
 
 def main(argv):
     service, flags = sample_tools.init(argv, 'blogger', 'v3', __doc__, __file__,
@@ -15,34 +16,42 @@ def main(argv):
     posts = service.posts()
 
     path_to_watch = "."
-    before = get_files(path_to_watch)
-    while 1:
-        time.sleep(5)
-        after = get_files(path_to_watch)
-        new = [f for f in after if f not in before]
-        if new:
-            try:
-                file_list = parse_files(new)
-                # Retrieve the list of Blogs this user has write privileges on
-                this_users_blogs = blogs.listByUser(userId='self').execute()
-                for blog in this_users_blogs['items']:
-                    id = blog['id']
-                for key in file_list:
-                    if file_list[key] != "":
-                        # Setup content format
-                        content = blogger_connector.content_setup(id, key[:-4], file_list[key])
-                        # Publish a draft page
-                        new_post = blogger_connector.create_draft_post(id, posts, content)
-                        print(new_post)
+    before = parse_logfile()
+    present = get_files(path_to_watch).split(",")
+    if before is None:
+        new = present
+    else:
+        new = [f for f in present if f not in before]
+    save_logfile(present)
 
-            except client.AccessTokenRefreshError:
-                print('The credentials have been revoked or expired, please re-run'
-                      'the application to re-authorize')
-        before = after
+    if new:
+        try:
+            file_list = parse_files(new)
+            # Retrieve the list of Blogs this user has write privileges on
+            this_users_blogs = blogs.listByUser(userId='self').execute()
+            for blog in this_users_blogs['items']:
+                id = blog['id']
+            for key in file_list:
+                if file_list[key] != "":
+
+                    # Setup content format
+                    content = blogger_connector.content_setup(id, key[:-4], file_list[key])
+                    # Publish a draft page
+                    new_post = blogger_connector.create_draft_post(id, posts, content)
+                    print(new_post)
+
+        except client.AccessTokenRefreshError:
+            print('The credentials have been revoked or expired, please re-run'
+                  'the application to re-authorize')
 
 
 def get_files(path):
-    return dict([(files, None) for files in os.listdir(path)])
+    file_list = []
+    for file in os.listdir(path):
+        if file.endswith(".txt"):
+            file_list.append(file)
+
+    return ", ".join(file_list)
 
 
 def parse_files(files):
@@ -54,6 +63,18 @@ def parse_files(files):
             file_list[f] = body
 
     return file_list
+
+
+def parse_logfile():
+    logfile = open("log.txt", "r")
+    if logfile.read():
+        return logfile.read().split(",")
+
+
+def save_logfile(files):
+    logfile = open("log.txt", "w")
+    logfile.write(",".join(files))
+
 
 if __name__ == '__main__':
     main(sys.argv)
