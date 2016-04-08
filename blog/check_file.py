@@ -28,11 +28,12 @@ def main(argv):
                 for blog in this_users_blogs['items']:
                     id = blog['id']
                 for key in file_list:
-                    # Setup content format
-                    content = blogger_connector.content_setup(id, key, file_list[key])
-                    # Publish a draft page
-                    new_post = blogger_connector.create_draft_post(id, posts, content)
-                    print(new_post)
+                    if file_list[key] != "":
+                        # Setup content format
+                        content = blogger_connector.content_setup(id, key[:-4], file_list[key])
+                        # Publish a draft page
+                        new_post = blogger_connector.create_draft_post(id, posts, content)
+                        print(new_post)
 
             except client.AccessTokenRefreshError:
                 print('The credentials have been revoked or expired, please re-run'
