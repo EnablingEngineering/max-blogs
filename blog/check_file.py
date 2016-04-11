@@ -17,10 +17,12 @@ def main(argv):
     path_to_watch = "."
     before = parse_logfile()
     present = get_files(path_to_watch).split(",")
+
     if before is None:
         new = present
     else:
         new = [f for f in present if f not in before]
+
     save_logfile(present)
 
     if new:
@@ -50,7 +52,7 @@ def get_files(path):
         if file.endswith(".txt"):
             file_list.append(file)
 
-    return ", ".join(file_list)
+    return ",".join(file_list)
 
 
 def parse_files(files):
@@ -65,8 +67,7 @@ def parse_files(files):
 
 
 def parse_logfile():
-    logfile = open("log.txt", "r")
-    if logfile.read():
+    with open("log.txt", "r") as logfile:
         return logfile.read().split(",")
 
 
