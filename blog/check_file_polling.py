@@ -3,7 +3,6 @@
 import sys
 import os
 import time
-import logging
 import blogger_connector
 from oauth2client import client
 from googleapiclient import sample_tools
@@ -17,11 +16,10 @@ def main(argv):
     posts = service.posts()
 
     path_to_watch = "."
-
-    before = dict([(f, None) for f in os.listdir(path_to_watch)])
+    before = dict ([(f, None) for f in os.listdir (path_to_watch)])
     while 1:
-        time.sleep(10)
-        after = dict([(f, None) for f in os.listdir (path_to_watch)])
+        time.sleep (5)
+        after = dict ([(f, None) for f in os.listdir (path_to_watch)])
         new = [f for f in after if not f in before]
         if new:
             try:
@@ -36,12 +34,13 @@ def main(argv):
                         # Setup content format
                         content = blogger_connector.content_setup(id, key[:-4], file_list[key])
                         # Publish a draft page
-                        new_post = blogger_connector.create_draft_post(id, posts, content)
+                        new_post = blogger_connector.create_draft_post(posts, id, content)
                         print(new_post)
 
             except client.AccessTokenRefreshError:
                 print('The credentials have been revoked or expired, please re-run'
                       'the application to re-authorize')
+        before = after
 
 
 def get_files(path):
