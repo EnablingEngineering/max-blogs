@@ -2,7 +2,6 @@
 
 import sys
 import os
-import logging
 import blogger_connector
 from oauth2client import client
 from googleapiclient import sample_tools
@@ -37,7 +36,7 @@ def main(argv):
                     # Setup content format
                     content = blogger_connector.content_setup(id, key[:-4], file_list[key])
                     # Publish a draft page
-                    new_post = blogger_connector.create_draft_post(id, posts, content)
+                    new_post = blogger_connector.create_draft_post(posts, id, content)
                     print(new_post)
 
         except client.AccessTokenRefreshError:

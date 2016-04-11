@@ -1,12 +1,13 @@
+# author: zachary paulson
 import datetime
 
-
-def create_draft_post(blog_id, posts, content):
+def create_draft_post(posts, blog_id, content):
     new_post = posts.insert(blogId=blog_id, body=content)
     return new_post.execute()
 
-def update_blog_post(blog_id, post_id, content, posts):
-    return
+def update_blog_post(posts, blog_id, post_id, content):
+    update_post = posts.update(blogId=blog_id, postId=post_id, body=content)
+    return update_post.execute()
 
 def content_setup(blog_id, title, body):
     today = datetime.date.today()
